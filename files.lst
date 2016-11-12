@@ -1,0 +1,19 @@
+-system AtariXL
+-noOS
+-lowAddr 0x4000
+-hiAddr 0x9FFF
+
+_defs_xl.k65		main
+icons.k65			main
+cirno2.k65			main
+zeropage.k65		main
+util.k65			main
+snow2.k65			main
+music.k65			main
+text.k65			main
+scroller.k65		main
+main_xl.k65			main
+
+-o atari-xl-simple.xex
+
+-link

@@ -1,0 +1,435 @@
+data dli_scroller_a {
+	nocross
+	0xF0 0x70 0x30
+	0x4E &<cirno_img_1 &>cirno_img_1
+	for x=2..120 eval [0x0E]
+//	0x4E &<cirno_img_2 &>cirno_img_2
+//	for x=2..20 eval [0x0E]
+	0x30 0xF0 0x70
+		0x70 0x70
+DS1:	0x70
+DS2:	0x70
+DS3:	0x70
+	0x52 &<text_a1 &>text_a1
+DS4:	0x00
+DS5:	0x00
+DS6:	0x00
+	0x70 0x70 0x50
+	0x41 &<dli_scroller_a &>dli_scroller_a
+}
+
+var cirno_icon_row_1 = 30319
+var cirno_icon_row_2 = 30351
+var cirno_icon_row_3 = 30383
+var cirno_icon_row_4 = 30415
+var cirno_icon_row_5 = 30447
+var cirno_icon_row_6 = 30479
+var cirno_icon_row_7 = 30511
+var cirno_icon_row_8 = 30543
+var cirno_icon_row_9 = 30575
+var cirno_icon_row_10 = 30607
+var cirno_icon_row_11 = 30639
+var cirno_icon_row_12 = 30671
+var cirno_icon_row_13 = 30703
+var cirno_icon_row_14 = 30735
+var cirno_icon_row_15 = 30767
+var cirno_icon_row_16 = 30799
+
+data greets {
+	align 16
+	charset " !_#$%&'()*+,-./0123456789:;_=_?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^__<>______________________________abcdefghijklmnopqrstuvwxyz____"
+	0x01 "    agenda     "
+	0x01 "      atr      "
+	0x05 "     crtc      "
+	0x04 "      dss      "
+	0x01 "   grey/msb    "
+	0x01 "    lamers     "
+	0x02 "      lft      "
+	0x01 "    lotharek   "
+	0x01 "      tdc      "
+	0x01 "   tristesse   "
+	0x03 "      tsl      "
+	0x03 "    yerzmyey   "
+	0x01 "    SV 2k16    "
+	0x05 " we had 5 mins "
+	0x05 " if we forgot  "
+	0x05 " you on greets "
+	0x06 " we are sorry!~"
+	0x05 "               "
+	0xFF
+}
+
+data scroll_text {
+	align 256
+charset " !_#$%&'()*+,-./0123456789:;_=_?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^__<>______________________________abcdefghijklmnopqrstuvwxyz____"
+	"                                         "
+	"Hi! This is ChenThread's first Atari XE intro (and first intro in general!) made in far too little time during SillyVenture 2016! As you might've seen, Cirno has graced us with her presence and wonderful particle effects which we could all observe outside. What a nice way to accompany a demoparty - thanks, (n)ice fairy!"
+	"            "
+	"This intro has been created by asie/Chen in code, Axoi/Chen in art, GreaseMonkey/Chen in high quality rips and font, with additional help (hardware/testing) from skrzyp."
+	"            "
+	"Special thanks go out to KK for providing a monitor and creating K65 - both were very helpful in finishing the intro!"
+	"            "
+	"Our boring scrolltext is about to come to an end, so have some greetings before it repeats endlessly..."
+	"                                         "
+	0x8b
+}
+
+data scroll_sine_1 {
+	nocross
+	for x=1..128 eval [min(round((10 * sin(2 * pi * x / 128)) + 10), 6) * 16]
+}
+
+data scroll_sine_2 {
+	nocross
+	for x=1..128 eval [max(min(round((10 * sin(2 * pi * x / 128)) + 10 - 7), 7), 0) * 16]
+}
+
+data scroll_sine_3 {
+	nocross
+	for x=1..128 eval [max(round((10 * sin(2 * pi * x / 128)) + 10 - 14), 0) * 16]
+}
+
+func prepare_greets {
+	NMIEN=a=0x00
+	NMIADL=a=&<effect_greets_nmi
+	NMIADH=a=&>effect_greets_nmi
+
+	temp3=a=&<greets
+	temp4=a=&>greets
+
+	a=0x30
+	DS1=a DS2=a DS3=a DS4=a DS5=a DS6=a
+
+	y=41
+	a=0
+	temp1=a
+	temp2=a
+	temp5=a
+	{
+		text_a1,y=a
+		y--
+		y?0xFF
+	} !=
+
+	NMIEN=a=0xC0
+}
+
+func prepare_scroll {
+	NMIEN=a=0x00
+	NMIADL=a=&<effect_scroller_nmi
+	NMIADH=a=&>effect_scroller_nmi
+
+	temp3=a=&<scroll_text
+	temp4=a=&>scroll_text
+
+	x=0x0F
+	COLPF1=x
+	temp6=x
+
+	y=41
+	a=0
+	temp1=a
+	temp2=a
+	temp5=a
+	{
+		text_a1,y=a
+		y--
+		y?0xFF
+	} !=
+
+	NMIEN=a=0xC0
+}
+
+func random_function {
+		a<<
+		a<<
+		a<<
+		a<<
+		a<<
+		x=a
+		y=0
+
+		cirno_icon_row_1,y=a=icons_img,x
+		x++
+		y++
+		cirno_icon_row_1,y=a=icons_img,x
+		x++
+		y--
+		cirno_icon_row_2,y=a=icons_img,x
+		x++
+		y++
+		cirno_icon_row_2,y=a=icons_img,x
+		x++
+		y--
+		cirno_icon_row_3,y=a=icons_img,x
+		x++
+		y++
+		cirno_icon_row_3,y=a=icons_img,x
+		x++
+		y--
+		cirno_icon_row_4,y=a=icons_img,x
+		x++
+		y++
+		cirno_icon_row_4,y=a=icons_img,x
+		x++
+		y--
+		cirno_icon_row_5,y=a=icons_img,x
+		x++
+		y++
+		cirno_icon_row_5,y=a=icons_img,x
+		x++
+		y--
+		cirno_icon_row_6,y=a=icons_img,x
+		x++
+		y++
+		cirno_icon_row_6,y=a=icons_img,x
+		x++
+		y--
+		cirno_icon_row_7,y=a=icons_img,x
+		x++
+		y++
+		cirno_icon_row_7,y=a=icons_img,x
+		x++
+		y--
+		cirno_icon_row_8,y=a=icons_img,x
+		x++
+		y++
+		cirno_icon_row_8,y=a=icons_img,x
+		x++
+		y--
+		cirno_icon_row_9,y=a=icons_img,x
+		x++
+		y++
+		cirno_icon_row_9,y=a=icons_img,x
+		x++
+		y--
+		cirno_icon_row_10,y=a=icons_img,x
+		x++
+		y++
+		cirno_icon_row_10,y=a=icons_img,x
+		x++
+		y--
+		cirno_icon_row_11,y=a=icons_img,x
+		x++
+		y++
+		cirno_icon_row_11,y=a=icons_img,x
+		x++
+		y--
+		cirno_icon_row_12,y=a=icons_img,x
+		x++
+		y++
+		cirno_icon_row_12,y=a=icons_img,x
+		x++
+		y--
+		cirno_icon_row_13,y=a=icons_img,x
+		x++
+		y++
+		cirno_icon_row_13,y=a=icons_img,x
+		x++
+		y--
+		cirno_icon_row_14,y=a=icons_img,x
+		x++
+		y++
+		cirno_icon_row_14,y=a=icons_img,x
+		x++
+		y--
+		cirno_icon_row_15,y=a=icons_img,x
+		x++
+		y++
+		cirno_icon_row_15,y=a=icons_img,x
+		x++
+		y--
+		cirno_icon_row_16,y=a=icons_img,x
+		x++
+		y++
+		cirno_icon_row_16,y=a=icons_img,x
+}
+
+inline dli_handler {
+	a=VCOUNT
+	WSYNC=a
+	a?0x40
+	< {
+		COLBK=a=0x90
+		COLPF0=a=0x88
+		COLPF1=a=0x8A
+		COLPF2=a=0x0E
+	} else {
+		COLPF1=a=temp6
+		a=0x90
+		COLBK=a
+		COLPF2=a
+	}
+	pop_axy
+	return_i
+}
+
+naked effect_greets_nmi {
+	push_axy
+
+	a=NMIST
+	a?0x80
+	>= {
+		dli_handler
+	}
+
+	music_update
+
+	a=temp5
+	== {
+		x=0
+		a=(temp3,x)
+		a?0xFF
+		== {
+			prepare_scroll
+			pop_axy
+			return_i
+		}
+
+		random_function
+
+		y=15
+		{
+			TEXT_A1_GREETS,y=a=(temp3),y
+			y--
+			y?0
+		} !=
+	}
+
+	a?0x10
+	< {
+		temp6=a
+	} else {
+		a?0x30
+		>= {
+			a?0x40
+			< {
+				a&0x0F
+				a^0x0F
+				temp6=a
+			} else {
+				temp5=a=0xFF
+			}
+		}
+	}
+
+	temp5++
+	== {
+		a=temp3
+		c-
+		a+16
+		temp3=a
+		a=temp4
+		a+0
+		temp4=a
+	}
+
+	pop_axy
+	return_i
+}
+
+naked effect_scroller_nmi {
+	push_axy
+
+	a=NMIST
+	a?0x80
+	>= {
+		dli_handler
+	}
+
+	music_update
+
+	a=scroll_enabled
+	!= {
+		x=temp2
+		x++
+		x?0x04
+		== {
+			x=0
+			temp2=x
+
+			y=42
+			a=(temp3),y
+			a?0x8b
+			== {
+				//temp3=a=&<scroll_text
+				//temp4=a=&>scroll_text
+				prepare_greets
+				pop_axy
+				return_i
+			}
+
+			y=0
+			{
+				a=(temp3),y
+				text_a1,y=a
+				y++
+				y?42
+			} <
+			x=temp3
+			x++
+			temp3=x
+			== {
+				x=temp4
+				x++
+				temp4=x
+			}
+		} else {
+			temp2=x
+		}
+	}
+
+	x=temp5
+	x++
+	temp5=x
+	a=x
+	a&0x7f
+	x=a
+
+	DS1=a=scroll_sine_3,x
+	a^0x70
+	DS4=a
+
+	DS2=a=scroll_sine_2,x
+	a^0x70
+	DS5=a
+
+	DS3=a=scroll_sine_1,x
+	a^0x70
+	DS6=a
+
+	a=scroll_enabled
+	== {
+		a=0
+	} else {
+		a=temp2
+		a^0x03
+	}
+	HSCROL=a
+
+	pop_axy
+	return_i
+}
+
+func effect_scroller {
+	NMIEN=a=0x00
+	DMACTL=a=0x00
+	DLISTL=a=&<dli_scroller_a
+	DLISTH=a=&>dli_scroller_a
+	COLBK=a=0x00
+	COLPF2=a=0x00
+	DMACTL=a=0x21
+
+	temp6=x=0x0F
+	COLPM0=x=0x00
+
+	NMIADL=a=&<effect_scroller_nmi
+	NMIADH=a=&>effect_scroller_nmi
+	NMIEN=a=0x40
+
+	prepare_scroll
+	//prepare_greets
+
+	scroll_enabled=a=1
+	running=a=1
+}

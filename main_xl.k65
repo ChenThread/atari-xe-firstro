@@ -1,0 +1,46 @@
+func wait_run {
+	{
+		{ a=VCOUNT }!=
+		a=running a?0
+		== {
+			goto Test1
+		}
+	} always
+Test1:
+}
+
+func wait_run_snow {
+	{
+		count_snoweski
+		a=running a?0
+		== {
+			goto Test2
+		}
+	} always
+Test2:
+}
+
+main {
+	init_atari
+	music_init
+
+	reset_frame
+	effect_text_prompt_init
+	effect_text_prompt_a
+	enable_snow
+	snow_dir=a=1
+	wait_run_snow
+
+	reset_frame
+	effect_text_prompt_init
+	effect_text_prompt_b
+	enable_snow
+	snow_dir=a=0
+	wait_run_snow
+
+	reset_frame
+	effect_scroller
+	wait_run
+
+	music_kill
+}

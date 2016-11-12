@@ -1,0 +1,97 @@
+var snow_loc_1 = 0x1800
+var snow_loc_r = 0x1980
+
+data snow_pos {
+	nocross	
+	0xFF
+snow_pos_1:
+	0xFF
+snow_pos_2:
+	for i=1..192 eval [0xFF]
+}
+
+func get_lfsr {
+	a=lfsr_val
+	a<<
+	>= goto n2
+	a^0x1D
+n2:
+	lfsr_val=a
+}
+
+func incr_snow {
+	x=190
+	{
+		a=snow_pos,x
+		a?0xFF
+		!= {
+			y=snow_dir
+			y?0
+			== {
+				c-
+				a+1
+				a?0xFE
+				== {
+					a=0
+				}
+			} else {
+
+			}
+		}
+		snow_pos_2,x=a
+		x--
+		x?0xFF
+	} !=
+	get_lfsr
+	snow_pos=a
+	get_lfsr
+	snow_pos_1=a
+}
+
+func count_snoweski {
+	a=VCOUNT
+	// COLBK=a
+	a?0x0C
+	< { return }
+	a?0x6C
+	>= {
+		x=0xFF
+		HPOSM0=x
+		HPOSM1=x
+		return
+	}
+
+	c-
+	a-0x0C
+	a<<
+	x=a
+
+	HPOSM0=a=snow_pos,x
+	HPOSM1=a=snow_pos_1,x
+	return
+}
+
+func enable_snow {
+	DMACTL=a=0x2E
+	PMBASE=a=0x18
+	GRACTL=a=0x01
+
+	a=0xFF
+	HPOSM0=a
+	a=0xFF
+	HPOSM1=a
+	a=0xFF
+	HPOSM2=a
+	a=0xFF
+	HPOSM3=a
+
+	SIZEM=a=0
+
+	x=0x7F
+	a=0xAA
+	{
+		snow_loc_r,x=a
+		x--
+		x?0xFF
+	} !=
+}

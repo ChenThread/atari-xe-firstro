@@ -1,0 +1,25 @@
+var framelo = 0x00
+var framehi = 0x01
+var running = 0x02
+
+var music_rtick = 0x06
+var music_rpos = 0x07
+var music_vol_ch1 = 0x08
+var music_vol_ch2 = 0x09
+var music_vol_ch3 = 0x0A
+var music_vol_ch4 = 0x0B
+var music_per_ch1 = 0x0C
+var music_per_ch2 = 0x0D
+var music_per_ch3 = 0x0E
+var music_per_ch4 = 0x0F
+
+var lfsr_val = 0x20
+var snow_dir = 0x21
+var scroll_enabled = 0x22
+
+var temp1 = 0x10
+var temp2 = 0x11
+var temp3 = 0x12
+var temp4 = 0x13
+var temp5 = 0x14
+var temp6 = 0x15

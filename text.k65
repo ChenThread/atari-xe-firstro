@@ -1,0 +1,203 @@
+data dli_text_a {
+	nocross
+	for x=1..13 eval [0x70]
+	0x42
+DLI_TEXT_A_L: &<text_a1
+DLI_TEXT_A_H: &>text_a1
+	0x02
+	for x=16..25 eval [0x70]
+	0x41 &<dli_text_a &>dli_text_a
+}
+
+var atari_charset_n = 0xE370
+var atari_charset_overwrite_l = 0xE208
+var atari_charset_overwrite_r = 0xE210
+
+data text_a1 { 
+nocross
+charset " !_#$%&'()*+,-./0123456789:;_=_?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^__<>______________________________abcdefghijklmnopqrstuvwxyz____"
+"           N"
+TEXT_A1_GREETS:
+"ovember 11th, 2016          "
+"          ( Sillyventure 2016 )         "
+}
+
+data text_a2 { 
+nocross
+charset " !_#$%&'()*+,-./0123456789:;_=_?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^__<>______________________________abcdefghijklmnopqrstuvwxyz____"
+"    It appears that this year's party   "
+"    has been invaded by a<>ice fairy!   "
+}
+
+data text_sine {
+	nocross
+	for x=1..32 eval [(3.5 * sin(x * 2 * pi / 32)) + 3.5]
+}
+
+inline text_fade_in_0 {	
+	a=x
+	a>>
+	a>>
+	a>>
+	COLPF1=a
+	COLPM0=a
+	COLPM1=a
+}
+
+inline text_fade_in_1 {	
+	a=x
+	a^0x80
+	a>>
+	a>>
+	a>>
+	COLPF1=a
+	COLPM0=a
+	COLPM1=a
+}
+
+inline text_fade_out_0 {	
+	a=x
+	a^0x7F
+	a>>
+	a>>
+	a>>
+	COLPF1=a
+	COLPM0=a
+	COLPM1=a
+}
+
+inline text_fade_out_1 {	
+	a=x
+	a^0xFF
+	a>>
+	a>>
+	a>>
+	COLPF1=a
+	COLPM0=a
+	COLPM1=a
+}
+
+naked effect_text_nmi {
+	push_axy
+
+	music_update
+	incr_snow
+
+	x=framelo
+	x?0x80
+	< {
+		y=framehi
+		y?0
+		== {
+			a=0
+			goto SaveTemp1
+		}
+	}
+CalcTemp1:
+	a=x
+	a>>
+	a&0x1F
+	x=a
+	a=text_sine,x
+	x=framehi
+	x?0
+	== {
+		a>>
+		a>>
+	} else {
+		x?1
+		== {
+			x=framelo
+			x?0x40
+			< {
+				a>>
+			}
+		}
+	}
+SaveTemp1:
+	temp1=a
+
+	y=0
+	{
+		a=atari_charset_n,y
+		x=temp1
+		!= {
+			{
+				a>>
+				x--
+			} !=
+		}
+		atari_charset_overwrite_l,y=a
+
+		a=0x09
+		c-
+		a-temp1
+		x=a
+		a=atari_charset_n,y
+		!= {
+			{
+				a<<
+				x--
+			} !=
+		}
+		atari_charset_overwrite_r,y=a
+
+		y++
+		y?0x08
+	} !=
+
+	x=framehi
+	x?0x00
+	== {
+		x=framelo
+		x?0x80
+		< {
+			text_fade_in_0
+		}
+	} else {
+		x?temp5
+		== {
+			x=framelo
+			x?0x80
+			< {
+				text_fade_out_0
+			} else {
+				running=a=0
+			}
+		}
+	}
+	inc_frame
+
+	pop_axy
+	return_i
+}
+
+func effect_text_prompt_init {
+	NMIEN=a=0x00
+	DMACTL=a=0x00
+	DLISTL=a=&<dli_text_a
+	DLISTH=a=&>dli_text_a
+	COLBK=a=0x00
+	COLPF2=a=0x00
+	DMACTL=a=0x22
+
+	running=a=1
+
+	COLPF1=x=0x00
+	COLPM0=x=0x00
+
+	NMIADL=a=&<effect_text_nmi
+	NMIADH=a=&>effect_text_nmi
+}
+
+func effect_text_prompt_a {
+	temp5=a=0x01
+	NMIEN=a=0x40
+}
+
+func effect_text_prompt_b {
+	temp5=a=0x02
+	DLI_TEXT_A_L=a=&<text_a2
+	DLI_TEXT_A_H=a=&>text_a2
+	NMIEN=a=0x40
+}
